@@ -1,0 +1,6 @@
+{
+    "VoilaConfiguration": {
+        "template": "lab",
+        "show_tracebacks": true
+    }
+}

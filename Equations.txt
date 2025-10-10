@@ -1,0 +1,99 @@
+Equation 5
+Tag 5 -- A_T(S):
+
+<a name="a_t(s)"></a>
+$$ a_{t}{\left(s \right)} = \left(25.0 - 0.15 s\right) \left(-0.15\right) \tag{5} $$
+
+
+
+
+Equation 6
+Tag 6 -- A_T_B:
+
+<a name="a_t_B"></a>
+$$ a_{t} = \left(25.0 - 0.15 \cdot 51.5\right) \left(-0.15\right) = -2.59 \mathrm{\,m/s^2} \tag{6} $$
+
+
+
+
+Equation 7
+Tag 7 -- A_N(V):
+
+<a name="a_n(v)"></a>
+$$ a_{n} = \frac{v^{2}}{\rho} \tag{7} $$
+
+
+
+
+Equation 9
+Tag 9 -- DYDX:
+
+<a name="dydx"></a>
+$$ - \frac{2 x}{625} \tag{9} $$
+
+
+
+
+Equation 10
+Tag 10 -- (No Label):
+
+
+$$ - \frac{2}{625} \tag{10} $$
+
+
+
+
+Equation 11
+(No Tag) -- RHO(X):
+
+<a name="rho(x)"></a>
+$$ \rho = \frac{\left(\left(- \frac{2 x}{625}\right)^{2} + 1\right)^{\frac{3}{2}}}{\left|{- \frac{2}{625}}\right|} $$
+
+
+
+
+Equation 12
+Tag 11 -- RHO_B:
+
+<a name="rho_B"></a>
+$$ \rho = \frac{\left(\left(\left(- \frac{2}{625}\right) 50\right)^{2} + 1\right)^{\frac{3}{2}}}{\left|{- \frac{2}{625}}\right|} = 324.58 \mathrm{\,m} \tag{11} $$
+
+
+
+
+Equation 13
+Tag 12 -- A_N(S):
+
+<a name="a_n(s)"></a>
+$$ a_{n} = \frac{v^{2}}{\rho} = \frac{\left(25 - 0.15 s\right)^{2}}{\rho} \tag{12} $$
+
+
+
+
+Equation 14
+Tag 13 -- A_N_B:
+
+<a name="a_n_B"></a>
+$$ a_{n} = \frac{\left(25 - 0.15 \cdot 51.5\right)^{2}}{324.58} = 0.92 \mathrm{\,m/s^2} \tag{13} $$
+
+
+
+
+Equation 15
+Tag 14 -- A:
+
+<a name="a"></a>
+$$ a = \sqrt{a_{n}^{2} + a_{t}^{2}} \tag{14} $$
+
+
+
+
+Equation 16
+Tag 15 -- A_B:
+
+<a name="a_B"></a>
+$$ a_{B} = \sqrt{{0.92}^{2} + {\left(-2.59\right)}^{2}} = 2.75 \mathrm{\,m/s^2} \tag{15} $$
+
+
+
+
