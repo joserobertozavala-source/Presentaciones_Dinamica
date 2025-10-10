@@ -9,6 +9,7 @@ from scipy.optimize import bisect
 from matplotlib.patches import Polygon
 from matplotlib import colors as mcolors
 from sympy.printing.pretty.pretty import xobj
+import sys
 
 
 
@@ -367,7 +368,7 @@ def get_screen_resolution(measurement="px"):
       return (width,height)
   except:
       try: #Probably the most OS independent way
-          if PYTHON_V3: 
+          if sys.version_info.major >= 3:
               import tkinter 
           else:
               import Tkinter as tkinter
