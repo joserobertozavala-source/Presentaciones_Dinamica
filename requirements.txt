@@ -1,6 +1,7 @@
 voila
 voila-material
 matplotlib
+ipympl
 sympy
 IPython
 numpy
