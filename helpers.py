@@ -10,13 +10,56 @@ from matplotlib.patches import Polygon
 from matplotlib import colors as mcolors
 from sympy.printing.pretty.pretty import xobj
 import sys
+from matplotlib import rcParams
+from cycler import cycler
 
 
 
 def reset_equations():
   open("Equations.txt", "w").close()
 
+class OsculatingCircle2D:
+  def __init__(self, ax, x0=0, y0=0, u_n: np.NdArray = np.array([1,0]), rho = 1.):
+    self.ax = ax
+    self.fig = ax.figure
+    self.x0, self.y0 = x0, y0
+    self.u_n = u_n
+    self.rho = rho
+    self.center = np.array([self.x0, self.y0]) + self.rho*self.u_n
+    self.color = rcParams['grid.color']
+    self.visible = True
 
+    (self.radial_line,) = ax.plot([self.x0, self.center[0]], [self.y0, self.center[1]],
+                                  color = self.color, linewidth=1,
+                                  linestyle= 'dashed',
+                                 )
+    
+    angles = np.linspace(0, 2*np.pi, 360)
+    circ_x = self.center[0] + np.cos(angles)*self.rho
+    circ_y = self.center[1] + np.sin(angles)*self.rho
+    (self.circle,) = ax.plot(circ_x, circ_y,
+                             color = self.color, linewidth=1, 
+                             linestyle= 'dashed',
+                            )
+    
+  def update(self, x0=0, y0=0,  u_n: np.NdArray = np.array([1,0]), rho = 1.):
+    self.x0, self.y0 = x0, y0
+    self.u_n = u_n
+    self.rho = rho
+    self.center = np.array([self.x0, self.y0]) + self.rho*self.u_n
+    
+    self.radial_line.set_data([self.x0, self.center[0]], [self.y0, self.center[1]])
+
+    angles = np.linspace(0, 2*np.pi, 360)
+    circ_x = self.center[0] + np.cos(angles)*self.rho
+    circ_y = self.center[1] + np.sin(angles)*self.rho
+    self.circle.set_data(circ_x, circ_y)
+  def set_visible(self, visibility: Bool):
+    self.visible = visibility
+    self.radial_line.set_visible(visibility)
+    self.circle.set_visible(visibility)
+
+  
 class FancyVector2D:
   def __init__(self, ax, x0=0, y0=0, x1=1, y1=0,
                 color="C0", linewidth=3.2,
@@ -473,3 +516,99 @@ def get_screen_resolution(measurement="px"):
                                   return (screensize[0]/mm_per_inch,screensize[1]/mm_per_inch)
                               else:
                                   raise NotImplementedError("Handling %s is not implemented." % measurement)
+
+
+
+
+
+
+
+
+
+
+
+def aplicar_tema(tema: str):
+  if tema == 'blanco':
+    edge_color = '#999999'
+    text_color = '#000000'
+    figure_color = '#ffffff'
+    axes_color = '#ffffff'
+  
+  
+    color_palette=[
+        '#1a921c',
+        '#321A91',
+        '#914F1A',
+        '#235224',
+        '#4F4282',
+        '#FFB980',
+        ]
+  elif tema == 'catpuccin latte':
+    edge_color = '#999999'
+    text_color = '#000000'
+    figure_color = '#EFF1F5'
+    axes_color = '#F5F7FA'
+  
+  
+    color_palette=[
+        '#1a921c',
+        '#321A91',
+        '#914F1A',
+        '#235224',
+        '#4F4282',
+        '#FFB980',
+        ]
+  elif tema == 'cobalto':
+    edge_color = '#B5C9D7'
+    text_color = '#ffffff'
+    figure_color = '#1c3c53'
+    axes_color = '#1E4159'
+  
+  
+    color_palette=[
+        '#57B9FF',
+        '#FF5A57',
+        '#FFFF57',
+        '#1FA2FF',
+        '#AB1715',
+        '#ABAB15',
+        '#719FBF',
+        '#AA7372',
+        '#AAAA72',
+        '#6B7780',
+        '#554443',
+        '#555543',
+        ]
+  else: raise ValueError('Tema no reconocido')
+  rcParams['axes.prop_cycle']=cycler(color=color_palette)
+  rcParams['axes.edgecolor']= edge_color
+  rcParams['axes.labelcolor']= text_color
+  rcParams['axes.labelweight'] = 'bold'
+  rcParams['xtick.color']= edge_color
+  rcParams['xtick.labelcolor']= text_color
+  rcParams['ytick.color']= edge_color
+  rcParams['ytick.labelcolor']= text_color
+  rcParams['text.color']= text_color
+  rcParams['figure.edgecolor']= edge_color
+  rcParams['grid.color']= edge_color
+  rcParams['grid.linestyle']=':'
+  rcParams['legend.frameon']= False
+  rcParams['legend.handlelength']= 1.
+  rcParams['legend.handleheight']= 3.
+  
+  rcParams['axes.facecolor']= axes_color
+  rcParams['figure.facecolor']= figure_color
+  
+  rcParams['text.usetex'] = True
+  rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+  rcParams['font.family'] = 'monospace'
+  # rcParams['font.monospace'] = ['Courier New']  # monospace font
+  rcParams['font.monospace'] = ['qcr']
+  
+  rcParams['font.size']= 20
+  rcParams['axes.titlesize']= 20
+  rcParams['axes.labelsize']= 20
+  rcParams['xtick.labelsize']= 18
+  rcParams['ytick.labelsize']= 18
+  rcParams['legend.fontsize']= 18
+  rcParams['figure.titlesize']= 20
