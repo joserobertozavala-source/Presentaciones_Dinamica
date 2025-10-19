@@ -1,5 +1,6 @@
 from __future__ import annotations
 from IPython.core.interactiveshell import Bool
+import matplotlib.pyplot as plt
 import re
 import bisect
 import sympy as sp
@@ -12,6 +13,8 @@ from sympy.printing.pretty.pretty import xobj
 import sys
 from matplotlib import rcParams
 from cycler import cycler
+import matplotlib.patches as patches
+import matplotlib.gridspec as gridspec
 
 
 
@@ -383,6 +386,13 @@ def toward_gray(color, amount=0.5, background = 'white'):
   rgb = np.array([r, g, b])
   new_rgb = rgb * (1 - amount) + gray * amount
   return mcolors.to_hex(new_rgb)
+  
+def equivalent_gray(color):
+  r, g, b, a = mcolors.to_rgba(color)
+  # luminancia perceptual
+  y = 0.2126*r + 0.7152*g + 0.0722*b
+  # replicar al canal gris
+  return mcolors.to_hex([y, y, y])
 
 
 
@@ -523,63 +533,179 @@ def get_screen_resolution(measurement="px"):
 
 
 
+class Tema_de_Color:
+  def __init__(self,
+               name,
+               edge_color= '#000000',
+               text_color= '#000000',
+               figure_color= '#ffffff',
+               axes_color= '#ffffff',
+               color_palette= [
+                 '#1f77b4',
+                 '#ff7f0e',
+                 '#2ca02c',
+                 '#d62728',
+                 '#9467bd',
+                 '#8c564b',
+                 '#e377c2',
+                 '#7f7f7f',
+                 '#bcbd22',
+                 '#17becf',
+               ]
+              ):
+    self.name = name
+    self.edge_color = edge_color
+    self.text_color = text_color
+    self.figure_color = figure_color
+    self.axes_color = axes_color
+    self.color_palette = color_palette
 
+    
+  def show_theme(self):
+    """Dibuja: arriba mock figure/axes (axes = 80% del figure) con labels;
+       abajo la paleta como barras etiquetadas."""
+    colors = self.color_palette
+    n = len(colors)
+  
+    # calcular tamaño razonable según número de colores
+    height = max(6.5, 1.0 + 0.3 * n * 3)   # al menos 4", crecer con n
+    fig_c = plt.figure(figsize=(7, height), facecolor= self.figure_color)
+    gs = gridspec.GridSpec(right=1.0, nrows=4, ncols=1, height_ratios=[1, 0.083*n,  0.083*n,  0.083*n], hspace=0.10)
+  
+    # --- TOP: mock figure / axes ---
+    ax_mock = fig_c.add_subplot(gs[0])
+    ax_mock.set_axis_off()
+  
+    # Dibujar rectángulo "figure" (ocupa todo el espacio)
+    ax_mock.add_patch(
+        patches.Rectangle((0, 0), 1, 1,
+                          transform=ax_mock.transAxes,
+                          facecolor=self.figure_color,
+                          edgecolor=self.edge_color,
+                          lw=2.)
+    )
+  
+    # Dibujar rectángulo "axes" centrado con escala 0.8 (80%)
+    inset_size_x = 0.8
+    inset_size_y = 0.7
+    inset_margin_x = (1 - inset_size_x) / 2
+    inset_margin_y = inset_margin_x
+    ax_mock.add_patch(
+      patches.Rectangle((inset_margin_x, inset_margin_y),
+                        inset_size_x, inset_size_y,
+                        transform=ax_mock.transAxes,
+                        facecolor=self.axes_color,
+                        edgecolor=self.edge_color,
+                        lw=1.0)
+      )
+  
+    # Labels usando self.text_color, centrados
+    ax_mock.text(0.5, 0.92, f"figure: {self.figure_color}", ha='center', va='center', transform=ax_mock.transAxes,
+                 color=self.text_color, fontsize=12, fontweight='bold')
+    ax_mock.text(0.5, 0.5, f"axes: {self.axes_color}", ha='center', va='center', transform=ax_mock.transAxes,
+                 color=self.text_color, fontsize=11)
+    ax_mock.text(0.5, 0.3, f"edges: {self.edge_color}", ha='center', va='center', transform=ax_mock.transAxes,
+                 color=self.text_color, fontsize=10)
+    ax_mock.text(0.5, 0.2, f"texts: {self.text_color}", ha='center', va='center', transform=ax_mock.transAxes,
+                 color=self.text_color, fontsize=10)
+  
+    # --- BOTTOM: paleta como barras ---
+    ax_pal = fig_c.add_subplot(gs[1])
+    ax_pal.set_facecolor(self.axes_color)
+    for spine in ax_pal.spines.values():
+      spine.set_edgecolor(self.edge_color)
+    ax_pal.set_xlim(0, 1.5)
+    ax_pal.set_ylim(-0.75, max(n - 0.25, 0.75))
+    ax_pal.set_yticks([])
+    ax_pal.set_xticks([])
+    for i, c in enumerate(colors):
+      ax_pal.barh(i, 1.0, color=c, edgecolor='none', height=0.8)
+      # escribir el hex un poco a la derecha
+      ax_pal.text(1.02, i, f"C{i} = {c}", va='center', ha='left', fontsize=9, color=self.text_color)
+    ax_pal.invert_yaxis()  # mostrar desde el primer color arriba
+    
+    # --- BOTTOM: grayed colors ---
+    grayed_ratio = 0.7
+    ax_gr = fig_c.add_subplot(gs[2])
+    ax_gr.set_facecolor(self.axes_color)
+    for spine in ax_gr.spines.values():
+      spine.set_edgecolor(self.edge_color)
+    ax_gr.set_xlim(0, 1.5)
+    ax_gr.set_ylim(-0.75, max(n - 0.25, 0.75))
+    ax_gr.set_yticks([])
+    ax_gr.set_xticks([])
+    for i, c in enumerate(colors):
+      gc = toward_gray(c, grayed_ratio, self.axes_color)
+      ax_gr.barh(i, 1.0, color=gc, edgecolor='none', height=0.8)
+      # escribir el hex un poco a la derecha
+      ax_gr.text(1.02, i, f"{grayed_ratio:.2f} grayed C{i} = {gc}     ", va='center', ha='left', fontsize=9, color=self.text_color)
+    ax_gr.invert_yaxis()  # mostrar desde el primer color arriba
+
+    # --- BOTTOM: grayed colors ---
+    ax_bw = fig_c.add_subplot(gs[3])
+    ax_bw.set_facecolor(equivalent_gray(self.axes_color))
+    for spine in ax_bw.spines.values():
+      spine.set_edgecolor(equivalent_gray(self.edge_color))
+    ax_bw.set_xlim(0, 1.5)
+    ax_bw.set_ylim(-0.75, max(n - 0.25, 0.75))
+    ax_bw.set_yticks([])
+    ax_bw.set_xticks([])
+    for i, c in enumerate(colors):
+      gc = equivalent_gray(c)
+      ax_bw.barh(i, 1.0, color=gc, edgecolor='none', height=0.8)
+      # escribir el hex un poco a la derecha
+      ax_bw.text(1.02, i, f"B/W C{i} = {gc}     ", va='center', ha='left', fontsize=9, color=equivalent_gray(self.text_color))
+    ax_bw.invert_yaxis()  # mostrar desde el primer color arriba
+
+
+    
+    plt.suptitle(f"Tema: '{self.name}'", y=0.95, color= self.text_color, fontsize = 15, ha='center', va='center', fontweight='bold')
+    plt.show()
+    return fig_c
+
+    
+
+registro_temas = {}
+def crear_tema(name,
+               edge_color= '#000000',
+               text_color= '#000000',
+               figure_color= '#ffffff',
+               axes_color= '#ffffff',
+               color_palette= [
+                 '#1f77b4',
+                 '#ff7f0e',
+                 '#2ca02c',
+                 '#d62728',
+                 '#9467bd',
+                 '#8c564b',
+                 '#e377c2',
+                 '#7f7f7f',
+                 '#bcbd22',
+                 '#17becf',
+               ],
+               overwrite= False
+              ):
+  if (not overwrite) and (name in registro_temas):
+    raise ValueError(f'Tema "{name}" ya existe')
+  tema = Tema_de_Color(name, edge_color, text_color, figure_color, axes_color, color_palette)
+  registro_temas[name] = tema
+  return tema
+    
 
 
 
 def aplicar_tema(tema: str):
-  if tema == 'blanco':
-    edge_color = '#999999'
-    text_color = '#000000'
-    figure_color = '#ffffff'
-    axes_color = '#ffffff'
+  TemaC = registro_temas.get(tema)
+  if TemaC is None:
+    raise ValueError('Tema no reconocido')
+    
+  edge_color = TemaC.edge_color
+  text_color = TemaC.text_color
+  figure_color = TemaC.figure_color
+  axes_color = TemaC.axes_color
+  color_palette= TemaC.color_palette
+
   
-  
-    color_palette=[
-        '#1a921c',
-        '#321A91',
-        '#914F1A',
-        '#235224',
-        '#4F4282',
-        '#FFB980',
-        ]
-  elif tema == 'catpuccin latte':
-    edge_color = '#999999'
-    text_color = '#000000'
-    figure_color = '#EFF1F5'
-    axes_color = '#F5F7FA'
-  
-  
-    color_palette=[
-        '#1a921c',
-        '#321A91',
-        '#914F1A',
-        '#235224',
-        '#4F4282',
-        '#FFB980',
-        ]
-  elif tema == 'cobalto':
-    edge_color = '#B5C9D7'
-    text_color = '#ffffff'
-    figure_color = '#1c3c53'
-    axes_color = '#1E4159'
-  
-  
-    color_palette=[
-        '#57B9FF',
-        '#FF5A57',
-        '#FFFF57',
-        '#1FA2FF',
-        '#AB1715',
-        '#ABAB15',
-        '#719FBF',
-        '#AA7372',
-        '#AAAA72',
-        '#6B7780',
-        '#554443',
-        '#555543',
-        ]
-  else: raise ValueError('Tema no reconocido')
   rcParams['axes.prop_cycle']=cycler(color=color_palette)
   rcParams['axes.edgecolor']= edge_color
   rcParams['axes.labelcolor']= text_color
@@ -612,3 +738,62 @@ def aplicar_tema(tema: str):
   rcParams['ytick.labelsize']= 18
   rcParams['legend.fontsize']= 18
   rcParams['figure.titlesize']= 20
+
+##############################################################
+##############################################################
+  
+# Temas de color
+crear_tema('blanco',
+           edge_color = '#999999',
+           text_color = '#000000',
+           figure_color = '#ffffff',
+           axes_color = '#ffffff',
+           color_palette=[
+             '#1a921c',
+             '#321A91',
+             '#914F1A',
+             '#235224',
+             '#4F4282',
+             '#FFB980',
+             ],
+           )
+crear_tema('catpuccin latte',
+           edge_color = '#999999',
+           text_color = '#000000',
+           figure_color = '#EFF1F5',
+           axes_color = '#F5F7FA',
+           color_palette=[
+             '#1a921c',
+             '#321A91',
+             '#914F1A',
+             '#235224',
+             '#4F4282',
+             '#FFB980',
+             ],
+          )
+crear_tema('cobalto',
+           edge_color = '#B5C9D7',
+           text_color = '#ffffff',
+           figure_color = '#1c3c53',
+           axes_color = '#1E4159',
+           color_palette=[
+             '#57B9FF',
+             '#FF5A57',
+             '#FFFF57',
+             '#1FA2FF',
+             '#AB1715',
+             '#ABAB15',
+             '#719FBF',
+             '#AA7372',
+             '#AAAA72',
+             '#6B7780',
+             '#554443',
+             '#555543',
+             ]
+          )
+def visualizar_tema(tema: str):
+  TemaC = registro_temas.get(tema)
+  if TemaC is None:
+    raise ValueError('Tema no reconocido')
+  fig_c = TemaC.show_theme()
+  return fig_c
