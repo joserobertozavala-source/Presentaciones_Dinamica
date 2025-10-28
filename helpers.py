@@ -13,11 +13,8 @@ from sympy.printing.pretty.pretty import xobj
 import sys
 from matplotlib import rcParams
 from cycler import cycler
-<<<<<<< HEAD
 import matplotlib.patches as patches
 import matplotlib.gridspec as gridspec
-=======
->>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)
 
 
 
@@ -536,7 +533,6 @@ def get_screen_resolution(measurement="px"):
 
 
 
-<<<<<<< HEAD
 class Tema_de_Color:
   def __init__(self,
                name,
@@ -695,14 +691,10 @@ def crear_tema(name,
   registro_temas[name] = tema
   return tema
     
-=======
-
->>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)
 
 
 
 def aplicar_tema(tema: str):
-<<<<<<< HEAD
   TemaC = registro_temas.get(tema)
   if TemaC is None:
     raise ValueError('Tema no reconocido')
@@ -714,60 +706,6 @@ def aplicar_tema(tema: str):
   color_palette= TemaC.color_palette
 
   
-=======
-  if tema == 'blanco':
-    edge_color = '#999999'
-    text_color = '#000000'
-    figure_color = '#ffffff'
-    axes_color = '#ffffff'
-  
-  
-    color_palette=[
-        '#1a921c',
-        '#321A91',
-        '#914F1A',
-        '#235224',
-        '#4F4282',
-        '#FFB980',
-        ]
-  elif tema == 'catpuccin latte':
-    edge_color = '#999999'
-    text_color = '#000000'
-    figure_color = '#EFF1F5'
-    axes_color = '#F5F7FA'
-  
-  
-    color_palette=[
-        '#1a921c',
-        '#321A91',
-        '#914F1A',
-        '#235224',
-        '#4F4282',
-        '#FFB980',
-        ]
-  elif tema == 'cobalto':
-    edge_color = '#B5C9D7'
-    text_color = '#ffffff'
-    figure_color = '#1c3c53'
-    axes_color = '#1E4159'
-  
-  
-    color_palette=[
-        '#57B9FF',
-        '#FF5A57',
-        '#FFFF57',
-        '#1FA2FF',
-        '#AB1715',
-        '#ABAB15',
-        '#719FBF',
-        '#AA7372',
-        '#AAAA72',
-        '#6B7780',
-        '#554443',
-        '#555543',
-        ]
-  else: raise ValueError('Tema no reconocido')
->>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)
   rcParams['axes.prop_cycle']=cycler(color=color_palette)
   rcParams['axes.edgecolor']= edge_color
   rcParams['axes.labelcolor']= text_color
@@ -799,7 +737,6 @@ def aplicar_tema(tema: str):
   rcParams['xtick.labelsize']= 18
   rcParams['ytick.labelsize']= 18
   rcParams['legend.fontsize']= 18
-<<<<<<< HEAD
   rcParams['figure.titlesize']= 20
 
 ##############################################################
@@ -860,6 +797,3 @@ def visualizar_tema(tema: str):
     raise ValueError('Tema no reconocido')
   fig_c = TemaC.show_theme()
   return fig_c
-=======
-  rcParams['figure.titlesize']= 20
->>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)
