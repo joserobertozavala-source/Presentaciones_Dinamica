@@ -1,0 +1,11 @@
+voila
+voila-material
+matplotlib
+sympy
+IPython
+numpy
+scipy
+ipywidgets
+cycler
+jupyterlab-slideshow
+catppuccin-jupyterlab
