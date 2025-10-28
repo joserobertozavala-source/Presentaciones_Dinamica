@@ -1,6 +1,10 @@
 voila
 voila-material
 matplotlib
+<<<<<<< HEAD
+=======
+ipympl==0.9.7
+>>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)
 sympy
 IPython
 numpy
@@ -8,4 +12,11 @@ scipy
 ipywidgets
 cycler
 jupyterlab-slideshow
+<<<<<<< HEAD
 catppuccin-jupyterlab
+=======
+catppuccin-jupyterlab
+solara
+ipyvuetify
+ipyvue
+>>>>>>> 4d5c43c (Agregué ejemplo de elipse con funcionalidad para adaptarse a pantallas pequeñas)

@@ -9,3 +9,6 @@ ipywidgets
 cycler
 jupyterlab-slideshow
 catppuccin-jupyterlab
+solara
+ipyvuetify
+ipyvue
