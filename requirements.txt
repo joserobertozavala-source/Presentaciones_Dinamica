@@ -1,7 +1,7 @@
 voila
 voila-material
 matplotlib==3.9.4
-ipympl==0.9.6
+ipympl==0.9.7
 sympy
 IPython
 numpy
